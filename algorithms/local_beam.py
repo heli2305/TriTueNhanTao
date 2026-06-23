@@ -1,4 +1,3 @@
-# https://github.com/heli2305/TriTueNhanTao
 
 import random
 from node import Node, is_goal, heuristic, valid_moves, make_child, next_name

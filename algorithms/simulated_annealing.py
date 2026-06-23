@@ -1,4 +1,3 @@
-# https://github.com/heli2305/TriTueNhanTao
 
 import math
 import random

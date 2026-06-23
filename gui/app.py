@@ -71,6 +71,7 @@ class VacuumApp(tk.Tk):
         self.current_node = None
         self.current_state_title = ""
         self.current_state_note = ""
+        self.map_coloring_frame = None
 
         # Load images
         self.project_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -137,6 +138,7 @@ class VacuumApp(tk.Tk):
 
         main = tk.Frame(self, bg="#f2f4f7", padx=16, pady=16)
         main.pack(fill="both", expand=True)
+        self.main_frame = main
 
         main.grid_columnconfigure(0, weight=0, minsize=230)
         main.grid_columnconfigure(1, weight=2)
@@ -176,12 +178,24 @@ class VacuumApp(tk.Tk):
         ttk.Button(local_sec.sub_frame, text="Local Beam Search",     command=lambda: self.run_algo("Local Beam Search")).pack(fill="x", pady=2)
         ttk.Button(local_sec.sub_frame, text="Simulated Annealing",  command=lambda: self.run_algo("Simulated Annealing")).pack(fill="x", pady=2)
 
+        # Nhom 4: Search in Complex Environments (Thu gon mac dinh)
+        complex_sec = CollapsibleFrame(left, title="Searching in complex environments", start_expanded=False)
+        complex_sec.pack(fill="x", pady=2)
+        ttk.Button(complex_sec.sub_frame, text="AND-OR Graph Search", command=lambda: self.run_algo("AND-OR Graph Search")).pack(fill="x", pady=2)
+
+        # Nhom 5: Constraint satisfaction problems (Thu gon mac dinh)
+        csp_sec = CollapsibleFrame(left, title="Constraint satisfaction problems", start_expanded=False)
+        csp_sec.pack(fill="x", pady=2)
+        ttk.Button(csp_sec.sub_frame, text="Backtracking (Tô màu)", command=lambda: self.run_map_coloring("Map Coloring - Backtracking")).pack(fill="x", pady=2)
+        ttk.Button(csp_sec.sub_frame, text="Forward Checking (Tô màu)", command=lambda: self.run_map_coloring("Map Coloring - Forward Checking")).pack(fill="x", pady=2)
+
         # Nut Reset dat ben duoi cung
         ttk.Button(left, text="Reset Bản Đồ",         command=self.reset_app).pack(fill="x", pady=(24, 4))
 
         # Cot giua
         middle = tk.Frame(main, bg="#f2f4f7")
         middle.grid(row=0, column=1, sticky="nsew")
+        self.middle_frame = middle
         middle.grid_columnconfigure(0, weight=1)
         middle.grid_rowconfigure(0, weight=5)
         middle.grid_rowconfigure(1, weight=0, minsize=240)
@@ -237,6 +251,7 @@ class VacuumApp(tk.Tk):
             pady=8
         )
         process_box.grid(row=0, column=2, sticky="nsew", padx=(16, 0))
+        self.process_box = process_box
         process_box.grid_propagate(False)
         process_box.grid_columnconfigure(0, weight=1)
         process_box.grid_rowconfigure(0, weight=1)
@@ -269,6 +284,7 @@ class VacuumApp(tk.Tk):
         self.draw_state(start_node, "Trạng thái bắt đầu", "Bấm nút bên trái để chạy thuật toán")
 
     def reset_app(self):
+        self.switch_to_vacuum_view()
         if self.after_id is not None:
             self.after_cancel(self.after_id)
             self.after_id = None
@@ -320,6 +336,12 @@ class VacuumApp(tk.Tk):
                 f'{"Current":<10}| Neighbors\n' +
                 "-" * 10 + "+-" + "-" * 70 + "\n"
             )
+        elif "AND-OR" in self.current_title:
+            self.process_text.insert(
+                "end",
+                f'{"Node":<8}| Chi tiết hoạt động đệ quy\n' +
+                "-" * 8 + "+-" + "-" * 50 + "\n"
+            )
         else:
             self.process_text.insert(
                 "end",
@@ -333,6 +355,7 @@ class VacuumApp(tk.Tk):
     # ------------------------------------------------------------------
 
     def run_algo(self, method, version=1):
+        self.switch_to_vacuum_view()
         if self.after_id is not None:
             self.after_cancel(self.after_id)
             self.after_id = None
@@ -365,6 +388,36 @@ class VacuumApp(tk.Tk):
             self.show_solution_step(0)
         else:
             self.show_final_result()
+
+    def switch_to_vacuum_view(self):
+        if self.map_coloring_frame is not None:
+            self.map_coloring_frame.pause()
+            self.map_coloring_frame.grid_remove()
+        self.middle_frame.grid()
+        self.process_box.grid()
+
+    def run_map_coloring(self, method):
+        # Stop vacuum animations
+        if self.after_id is not None:
+            self.after_cancel(self.after_id)
+            self.after_id = None
+            
+        # Hide vacuum frames
+        self.middle_frame.grid_remove()
+        self.process_box.grid_remove()
+        
+        # Show map coloring frame
+        if self.map_coloring_frame is None:
+            from gui.map_coloring_gui import MapColoringFrame
+            self.map_coloring_frame = MapColoringFrame(self.main_frame, self.project_dir)
+            
+        self.map_coloring_frame.grid(row=0, column=1, columnspan=2, sticky="nsew")
+        
+        # Run CSP search
+        goal_node, records, search_status = search(method)
+        
+        # Pass to map coloring frame
+        self.map_coloring_frame.set_records(method, records)
 
     # ------------------------------------------------------------------
     # Hien thi tung buoc qua trinh
@@ -410,6 +463,14 @@ class VacuumApp(tk.Tk):
                 f" Beam: {{{beam_str}}}\n"
                 f" Lân cận: [{neighbors_str}]\n"
                 f" Chọn mới: {{{next_beam_str}}}\n\n"
+            )
+            
+        elif "AND-OR" in self.current_title:
+            node_label = record["node_label"]
+            note = record["note"]
+            self.process_text.insert(
+                "end",
+                f"{node_label:<8}| {note}\n"
             )
             
         else:
@@ -635,11 +696,19 @@ class VacuumApp(tk.Tk):
             title = "Không tìm thấy lời giải bằng " + self.current_title
             path_label = "Đường đi tốt nhất đã thử: "
 
+        if "AND-OR" in self.current_title:
+            from algorithms.and_or_graph_search import format_conditional_plan
+            plan = getattr(self.goal_node, "plan", "failure")
+            plan_str = "Kế hoạch điều kiện (Conditional Plan):\n" + format_conditional_plan(plan) + "\n"
+        else:
+            plan_str = ""
+
         result = (
             title + "\n"
             + path_label + node_path + "\n"
             + "Hành động: " + action_path + "\n"
             + "Tổng cost: " + str(self.goal_node.cost) + "\n\n"
+            + plan_str
             + "Trạng thái cuối:\n" + matrix_text(self.goal_node.grid, self.goal_node.pos)
         )
         self.set_result(result)

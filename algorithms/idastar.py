@@ -1,5 +1,4 @@
 # Thuat toan IDA* (Iterative Deepening A*)
-# Trich xuat tu BTVN_buoi9.ipynb
 
 from node import Node, is_goal, is_cycle, heuristic, valid_moves, make_child, next_name
 from config import START_GRID, START_POS, MAX_SEARCH_RECORDS, MAX_FRONTIER_SHOW

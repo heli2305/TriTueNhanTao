@@ -14,10 +14,14 @@ from algorithms.hill_climbing import (
 )
 from algorithms.local_beam import local_beam_search
 from algorithms.simulated_annealing import simulated_annealing
+from algorithms.and_or_graph_search import and_or_graph_search
 
 
 def search(method, version=1):
     """Ham dieu phoi chung: nhan ten thuat toan, tra ve (goal_node, records, status)."""
+    if method == "AND-OR Graph Search":
+        return and_or_graph_search()
+
     if method == "UCS":
         return uniform_cost_search()
 
@@ -50,6 +54,14 @@ def search(method, version=1):
 
     if method == "Simulated Annealing":
         return simulated_annealing()
+
+    if method == "Map Coloring - Backtracking":
+        from algorithms.map_coloring import backtracking_search
+        return backtracking_search()
+
+    if method == "Map Coloring - Forward Checking":
+        from algorithms.map_coloring import forward_checking_search
+        return forward_checking_search()
 
     # Mac dinh: BFS hoac DFS
     return bfs_dfs_search(method, version=version)

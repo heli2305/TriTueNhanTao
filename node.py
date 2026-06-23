@@ -1,5 +1,4 @@
 # Model du lieu Node va cac ham tien ich dung chung
-# Trich xuat tu BTVN_buoi9.ipynb
 
 from dataclasses import dataclass
 from config import SIZE, START_GRID, START_POS
