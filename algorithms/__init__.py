@@ -63,5 +63,13 @@ def search(method, version=1):
         from algorithms.map_coloring import forward_checking_search
         return forward_checking_search()
 
+    if method == "No Observation":
+        from algorithms.belief_state_search import sensorless_greedy
+        return sensorless_greedy()
+
+    if method == "Partial Observation":
+        from algorithms.belief_state_search import partial_obs_greedy
+        return partial_obs_greedy()
+
     # Mac dinh: BFS hoac DFS
     return bfs_dfs_search(method, version=version)

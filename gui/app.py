@@ -72,6 +72,7 @@ class VacuumApp(tk.Tk):
         self.current_state_title = ""
         self.current_state_note = ""
         self.map_coloring_frame = None
+        self.belief_frame = None
 
         # Load images
         self.project_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -182,6 +183,8 @@ class VacuumApp(tk.Tk):
         complex_sec = CollapsibleFrame(left, title="Searching in complex environments", start_expanded=False)
         complex_sec.pack(fill="x", pady=2)
         ttk.Button(complex_sec.sub_frame, text="AND-OR Graph Search", command=lambda: self.run_algo("AND-OR Graph Search")).pack(fill="x", pady=2)
+        ttk.Button(complex_sec.sub_frame, text="No Observation", command=lambda: self.run_belief("No Observation")).pack(fill="x", pady=2)
+        ttk.Button(complex_sec.sub_frame, text="Partial Observation", command=lambda: self.run_belief("Partial Observation")).pack(fill="x", pady=2)
 
         # Nhom 5: Constraint satisfaction problems (Thu gon mac dinh)
         csp_sec = CollapsibleFrame(left, title="Constraint satisfaction problems", start_expanded=False)
@@ -393,6 +396,9 @@ class VacuumApp(tk.Tk):
         if self.map_coloring_frame is not None:
             self.map_coloring_frame.pause()
             self.map_coloring_frame.grid_remove()
+        if self.belief_frame is not None:
+            self.belief_frame.pause()
+            self.belief_frame.grid_remove()
         self.middle_frame.grid()
         self.process_box.grid()
 
@@ -405,6 +411,9 @@ class VacuumApp(tk.Tk):
         # Hide vacuum frames
         self.middle_frame.grid_remove()
         self.process_box.grid_remove()
+        if self.belief_frame is not None:
+            self.belief_frame.pause()
+            self.belief_frame.grid_remove()
         
         # Show map coloring frame
         if self.map_coloring_frame is None:
@@ -418,6 +427,22 @@ class VacuumApp(tk.Tk):
         
         # Pass to map coloring frame
         self.map_coloring_frame.set_records(method, records)
+
+    def run_belief(self, method):
+        if self.after_id is not None:
+            self.after_cancel(self.after_id)
+            self.after_id = None
+        self.middle_frame.grid_remove()
+        self.process_box.grid_remove()
+        if self.map_coloring_frame is not None:
+            self.map_coloring_frame.pause()
+            self.map_coloring_frame.grid_remove()
+        if self.belief_frame is None:
+            from gui.belief_gui import BeliefFrame
+            self.belief_frame = BeliefFrame(self.main_frame)
+        self.belief_frame.grid(row=0, column=1, columnspan=2, sticky="nsew")
+        goal_node, records, search_status = search(method)
+        self.belief_frame.set_records(method, records)
 
     # ------------------------------------------------------------------
     # Hien thi tung buoc qua trinh
