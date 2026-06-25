@@ -189,8 +189,10 @@ class VacuumApp(tk.Tk):
         # Nhom 5: Constraint satisfaction problems (Thu gon mac dinh)
         csp_sec = CollapsibleFrame(left, title="Constraint satisfaction problems", start_expanded=False)
         csp_sec.pack(fill="x", pady=2)
-        ttk.Button(csp_sec.sub_frame, text="Backtracking (Tô màu)", command=lambda: self.run_map_coloring("Map Coloring - Backtracking")).pack(fill="x", pady=2)
-        ttk.Button(csp_sec.sub_frame, text="Forward Checking (Tô màu)", command=lambda: self.run_map_coloring("Map Coloring - Forward Checking")).pack(fill="x", pady=2)
+        ttk.Button(csp_sec.sub_frame, text="Backtracking (To mau)", command=lambda: self.run_map_coloring("Map Coloring - Backtracking")).pack(fill="x", pady=2)
+        ttk.Button(csp_sec.sub_frame, text="Forward Checking (To mau)", command=lambda: self.run_map_coloring("Map Coloring - Forward Checking")).pack(fill="x", pady=2)
+        ttk.Button(csp_sec.sub_frame, text="AC-3 (To mau)", command=lambda: self.run_map_coloring("Map Coloring - AC-3")).pack(fill="x", pady=2)
+        ttk.Button(csp_sec.sub_frame, text="Min-Conflicts (To mau)", command=lambda: self.run_map_coloring("Map Coloring - Min-Conflicts")).pack(fill="x", pady=2)
 
         # Nut Reset dat ben duoi cung
         ttk.Button(left, text="Reset Bản Đồ",         command=self.reset_app).pack(fill="x", pady=(24, 4))
@@ -403,29 +405,19 @@ class VacuumApp(tk.Tk):
         self.process_box.grid()
 
     def run_map_coloring(self, method):
-        # Stop vacuum animations
         if self.after_id is not None:
             self.after_cancel(self.after_id)
             self.after_id = None
-            
-        # Hide vacuum frames
         self.middle_frame.grid_remove()
         self.process_box.grid_remove()
         if self.belief_frame is not None:
             self.belief_frame.pause()
             self.belief_frame.grid_remove()
-        
-        # Show map coloring frame
         if self.map_coloring_frame is None:
             from gui.map_coloring_gui import MapColoringFrame
             self.map_coloring_frame = MapColoringFrame(self.main_frame, self.project_dir)
-            
         self.map_coloring_frame.grid(row=0, column=1, columnspan=2, sticky="nsew")
-        
-        # Run CSP search
         goal_node, records, search_status = search(method)
-        
-        # Pass to map coloring frame
         self.map_coloring_frame.set_records(method, records)
 
     def run_belief(self, method):

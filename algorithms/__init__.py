@@ -56,12 +56,20 @@ def search(method, version=1):
         return simulated_annealing()
 
     if method == "Map Coloring - Backtracking":
-        from algorithms.map_coloring import backtracking_search
+        from algorithms.backtracking import backtracking_search
         return backtracking_search()
 
     if method == "Map Coloring - Forward Checking":
-        from algorithms.map_coloring import forward_checking_search
+        from algorithms.forward_checking import forward_checking_search
         return forward_checking_search()
+
+    if method == "Map Coloring - AC-3":
+        from algorithms.ac3 import ac3_search
+        return ac3_search()
+
+    if method == "Map Coloring - Min-Conflicts":
+        from algorithms.min_conflicts import min_conflicts_search
+        return min_conflicts_search()
 
     if method == "No Observation":
         from algorithms.belief_state_search import sensorless_greedy

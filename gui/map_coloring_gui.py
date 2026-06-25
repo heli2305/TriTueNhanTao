@@ -210,6 +210,122 @@ class MapColoringFrame(tk.Frame):
             anchor="w"
         )
 
+        if self.records and self.current_step < len(self.records):
+            record = self.records[self.current_step]
+            is_ac3 = "AC-3" in self.method_title
+            is_min_conflicts = "Min-Conflicts" in self.method_title
+            
+            if is_ac3:
+                active_arc = record.get("active_arc")
+                Xi, Xj = active_arc if active_arc else (None, None)
+                
+                for u in SEEDS:
+                    for v in ADJACENCY.get(u, []):
+                        if u < v:
+                            pu = SEEDS[u]
+                            pv = SEEDS[v]
+                            xu, yu = x + pu[0] * ratio, y + pu[1] * ratio
+                            xv, yv = x + pv[0] * ratio, y + pv[1] * ratio
+                            self.canvas.create_line(xu, yu, xv, yv, fill="#cbd5e1", width=1.5)
+                
+                if Xi and Xj:
+                    pi = SEEDS[Xi]
+                    pj = SEEDS[Xj]
+                    xi, yi = x + pi[0] * ratio, y + pi[1] * ratio
+                    xj, yj = x + pj[0] * ratio, y + pj[1] * ratio
+                    self.canvas.create_line(xi, yi, xj, yj, fill="#f59e0b", width=3, arrow="last", arrowshape=(10, 12, 4))
+                
+                for var in SEEDS:
+                    p = SEEDS[var]
+                    cx = x + p[0] * ratio
+                    cy = y + p[1] * ratio
+                    
+                    domains = record.get("domains", {})
+                    domain = domains.get(var, [])
+                    r = 13
+                    
+                    if var == Xi:
+                        fill_color = "#ef4444"
+                        outline_color = "#b91c1c"
+                        text_color = "white"
+                    elif var == Xj:
+                        fill_color = "#3b82f6"
+                        outline_color = "#1d4ed8"
+                        text_color = "white"
+                    elif len(domain) == 1:
+                        color_name = domain[0]
+                        fill_color = "#{:02x}{:02x}{:02x}".format(*COLOR_MAP.get(color_name, (255, 255, 255)))
+                        outline_color = "#0f172a"
+                        text_color = "white"
+                    elif len(domain) == 0:
+                        fill_color = "#7f1d1d"
+                        outline_color = "#450a0a"
+                        text_color = "white"
+                    else:
+                        fill_color = "#f8fafc"
+                        outline_color = "#64748b"
+                        text_color = "#0f172a"
+                        
+                    self.canvas.create_oval(cx - r, cy - r, cx + r, cy + r, fill=fill_color, outline=outline_color, width=2)
+                    
+                    short_label = var
+                    if var == "Go Vap": short_label = "GV"
+                    elif var == "Thu Duc": short_label = "TD"
+                    elif var == "Binh Thanh": short_label = "BT"
+                    elif var == "Phu Nhuan": short_label = "PN"
+                    elif var == "Tan Binh": short_label = "TB"
+                    elif var == "Tan Phu": short_label = "TP"
+                    elif var == "Binh Tan": short_label = "BiT"
+                    
+                    self.canvas.create_text(cx, cy, text=short_label, font=("Arial", 8, "bold"), fill=text_color)
+                    
+                    short_colors = {"Đỏ": "Đ", "Xanh lá": "L", "Vàng": "V", "Xanh dương": "D"}
+                    dom_str = "".join(short_colors.get(c, "?") for c in domain)
+                    self.canvas.create_text(cx, cy + 18, text=dom_str, font=("Consolas", 8, "bold"), fill="#334155")
+            
+            elif is_min_conflicts:
+                active_var = record.get("active_var")
+                assignment = record.get("assignment", {})
+                
+                for u in SEEDS:
+                    for v in ADJACENCY.get(u, []):
+                        if u < v:
+                            if assignment.get(u) == assignment.get(v):
+                                pu = SEEDS[u]
+                                pv = SEEDS[v]
+                                xu, yu = x + pu[0] * ratio, y + pu[1] * ratio
+                                xv, yv = x + pv[0] * ratio, y + pv[1] * ratio
+                                self.canvas.create_line(xu, yu, xv, yv, fill="#ef4444", width=3)
+                
+                for var in SEEDS:
+                    p = SEEDS[var]
+                    cx = x + p[0] * ratio
+                    cy = y + p[1] * ratio
+                    r = 13
+                    
+                    if var == active_var:
+                        fill_color = "#f59e0b"
+                        outline_color = "#b45309"
+                        text_color = "white"
+                    else:
+                        color_name = assignment.get(var)
+                        fill_color = "#{:02x}{:02x}{:02x}".format(*COLOR_MAP.get(color_name, (255, 255, 255)))
+                        outline_color = "#0f172a"
+                        text_color = "white"
+                        
+                    self.canvas.create_oval(cx - r, cy - r, cx + r, cy + r, fill=fill_color, outline=outline_color, width=2)
+                    
+                    short_label = var
+                    if var == "Go Vap": short_label = "GV"
+                    elif var == "Thu Duc": short_label = "TD"
+                    elif var == "Binh Thanh": short_label = "BT"
+                    elif var == "Phu Nhuan": short_label = "PN"
+                    elif var == "Tan Binh": short_label = "TB"
+                    elif var == "Tan Phu": short_label = "TP"
+                    elif var == "Binh Tan": short_label = "BiT"
+                    
+                    self.canvas.create_text(cx, cy, text=short_label, font=("Arial", 8, "bold"), fill=text_color)
+
     def update_logs(self):
         self.process_text.config(state="normal")
         self.process_text.delete("1.0", "end")
