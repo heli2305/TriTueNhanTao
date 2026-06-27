@@ -73,6 +73,7 @@ class VacuumApp(tk.Tk):
         self.current_state_note = ""
         self.map_coloring_frame = None
         self.belief_frame = None
+        self.karo_frame = None
 
         # Load images
         self.project_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -180,19 +181,26 @@ class VacuumApp(tk.Tk):
         ttk.Button(local_sec.sub_frame, text="Simulated Annealing",  command=lambda: self.run_algo("Simulated Annealing")).pack(fill="x", pady=2)
 
         # Nhom 4: Search in Complex Environments (Thu gon mac dinh)
-        complex_sec = CollapsibleFrame(left, title="Searching in complex environments", start_expanded=False)
+        complex_sec = CollapsibleFrame(left, title="Search in complex environments", start_expanded=False)
         complex_sec.pack(fill="x", pady=2)
         ttk.Button(complex_sec.sub_frame, text="AND-OR Graph Search", command=lambda: self.run_algo("AND-OR Graph Search")).pack(fill="x", pady=2)
         ttk.Button(complex_sec.sub_frame, text="No Observation", command=lambda: self.run_belief("No Observation")).pack(fill="x", pady=2)
         ttk.Button(complex_sec.sub_frame, text="Partial Observation", command=lambda: self.run_belief("Partial Observation")).pack(fill="x", pady=2)
 
         # Nhom 5: Constraint satisfaction problems (Thu gon mac dinh)
-        csp_sec = CollapsibleFrame(left, title="Constraint satisfaction problems", start_expanded=False)
+        csp_sec = CollapsibleFrame(left, title="CSP", start_expanded=False)
         csp_sec.pack(fill="x", pady=2)
         ttk.Button(csp_sec.sub_frame, text="Backtracking (To mau)", command=lambda: self.run_map_coloring("Map Coloring - Backtracking")).pack(fill="x", pady=2)
         ttk.Button(csp_sec.sub_frame, text="Forward Checking (To mau)", command=lambda: self.run_map_coloring("Map Coloring - Forward Checking")).pack(fill="x", pady=2)
         ttk.Button(csp_sec.sub_frame, text="AC-3 (To mau)", command=lambda: self.run_map_coloring("Map Coloring - AC-3")).pack(fill="x", pady=2)
         ttk.Button(csp_sec.sub_frame, text="Min-Conflicts (To mau)", command=lambda: self.run_map_coloring("Map Coloring - Min-Conflicts")).pack(fill="x", pady=2)
+
+        # Nhom 6: Game Search (Co Caro) (Thu gon mac dinh)
+        game_sec = CollapsibleFrame(left, title="Adversarial Search", start_expanded=False)
+        game_sec.pack(fill="x", pady=2)
+        ttk.Button(game_sec.sub_frame, text="Minimax (caro)", command=lambda: self.run_karo("Minimax")).pack(fill="x", pady=2)
+        ttk.Button(game_sec.sub_frame, text="Alpha-Beta (caro)", command=lambda: self.run_karo("Alpha-Beta")).pack(fill="x", pady=2)
+        ttk.Button(game_sec.sub_frame, text="Expectimax (caro)", command=lambda: self.run_karo("Expectimax")).pack(fill="x", pady=2)
 
         # Nut Reset dat ben duoi cung
         ttk.Button(left, text="Reset Bản Đồ",         command=self.reset_app).pack(fill="x", pady=(24, 4))
@@ -293,6 +301,8 @@ class VacuumApp(tk.Tk):
         if self.after_id is not None:
             self.after_cancel(self.after_id)
             self.after_id = None
+        if self.karo_frame is not None:
+            self.karo_frame.reset_game()
         
         self.records = []
         self.display_records = []
@@ -401,6 +411,9 @@ class VacuumApp(tk.Tk):
         if self.belief_frame is not None:
             self.belief_frame.pause()
             self.belief_frame.grid_remove()
+        if self.karo_frame is not None:
+            self.karo_frame.pause()
+            self.karo_frame.grid_remove()
         self.middle_frame.grid()
         self.process_box.grid()
 
@@ -413,6 +426,9 @@ class VacuumApp(tk.Tk):
         if self.belief_frame is not None:
             self.belief_frame.pause()
             self.belief_frame.grid_remove()
+        if self.karo_frame is not None:
+            self.karo_frame.pause()
+            self.karo_frame.grid_remove()
         if self.map_coloring_frame is None:
             from gui.map_coloring_gui import MapColoringFrame
             self.map_coloring_frame = MapColoringFrame(self.main_frame, self.project_dir)
@@ -429,12 +445,33 @@ class VacuumApp(tk.Tk):
         if self.map_coloring_frame is not None:
             self.map_coloring_frame.pause()
             self.map_coloring_frame.grid_remove()
+        if self.karo_frame is not None:
+            self.karo_frame.pause()
+            self.karo_frame.grid_remove()
         if self.belief_frame is None:
             from gui.belief_gui import BeliefFrame
             self.belief_frame = BeliefFrame(self.main_frame)
         self.belief_frame.grid(row=0, column=1, columnspan=2, sticky="nsew")
         goal_node, records, search_status = search(method)
         self.belief_frame.set_records(method, records)
+
+    def run_karo(self, method):
+        if self.after_id is not None:
+            self.after_cancel(self.after_id)
+            self.after_id = None
+        self.middle_frame.grid_remove()
+        self.process_box.grid_remove()
+        if self.map_coloring_frame is not None:
+            self.map_coloring_frame.pause()
+            self.map_coloring_frame.grid_remove()
+        if self.belief_frame is not None:
+            self.belief_frame.pause()
+            self.belief_frame.grid_remove()
+        if self.karo_frame is None:
+            from gui.karo_gui import KaroFrame
+            self.karo_frame = KaroFrame(self.main_frame)
+        self.karo_frame.grid(row=0, column=1, columnspan=2, sticky="nsew")
+        self.karo_frame.set_algorithm(method)
 
     # ------------------------------------------------------------------
     # Hien thi tung buoc qua trinh
