@@ -1,4 +1,4 @@
-from algorithms.map_coloring import (
+from algorithms.csp.map_coloring import (
     VARIABLES,
     DOMAINS,
     ADJACENCY,

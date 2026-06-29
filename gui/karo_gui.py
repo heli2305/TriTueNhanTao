@@ -4,9 +4,9 @@ import time
 import random
 
 # Import cac thuat toan
-from algorithms.minimax import minimax_decision, check_winner
-from algorithms.alpha_beta import alpha_beta_decision
-from algorithms.expectimax import expectimax_decision
+from algorithms.adversarial_search.minimax import minimax_decision, check_winner
+from algorithms.adversarial_search.alpha_beta import alpha_beta_decision
+from algorithms.adversarial_search.expectimax import expectimax_decision
 
 class KaroFrame(tk.Frame):
     def __init__(self, parent):

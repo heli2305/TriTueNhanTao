@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
-from algorithms.belief_state_search import SIZE
+from algorithms.searching_in_complex_environment.belief_state_search import SIZE
 
 
 class BeliefFrame(tk.Frame):

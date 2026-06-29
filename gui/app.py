@@ -751,7 +751,7 @@ class VacuumApp(tk.Tk):
             path_label = "Đường đi tốt nhất đã thử: "
 
         if "AND-OR" in self.current_title:
-            from algorithms.and_or_graph_search import format_conditional_plan
+            from algorithms.searching_in_complex_environment.and_or_graph_search import format_conditional_plan
             plan = getattr(self.goal_node, "plan", "failure")
             plan_str = "Kế hoạch điều kiện (Conditional Plan):\n" + format_conditional_plan(plan) + "\n"
         else:

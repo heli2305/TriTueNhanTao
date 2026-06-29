@@ -1,5 +1,5 @@
 import random
-from algorithms.map_coloring import VARIABLES, DOMAINS, ADJACENCY, format_assignment
+from algorithms.csp.map_coloring import VARIABLES, DOMAINS, ADJACENCY, format_assignment
 
 def get_conflicts(var, val, assignment):
     count = 0

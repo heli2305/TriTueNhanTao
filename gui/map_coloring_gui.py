@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 import os
 from PIL import Image, ImageTk, ImageDraw
-from algorithms.map_coloring import SEEDS, ADJACENCY, DOMAINS
+from algorithms.csp.map_coloring import SEEDS, ADJACENCY, DOMAINS
 
 # Anh xa ten mau sang mau RGB
 COLOR_MAP = {

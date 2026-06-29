@@ -1,20 +1,20 @@
 # Package algorithms - export ham search() chung cho GUI
 
-from algorithms.bfs_dfs import bfs_dfs_search
-from algorithms.ucs import uniform_cost_search
-from algorithms.ids import iterative_deepening_search
-from algorithms.greedy import greedy_search
-from algorithms.astar import a_star_search
-from algorithms.idastar import ida_star_search
-from algorithms.hill_climbing import (
+from algorithms.uninformed_search.bfs_dfs import bfs_dfs_search
+from algorithms.uninformed_search.ucs import uniform_cost_search
+from algorithms.uninformed_search.ids import iterative_deepening_search
+from algorithms.informed_search.greedy import greedy_search
+from algorithms.informed_search.astar import a_star_search
+from algorithms.informed_search.idastar import ida_star_search
+from algorithms.local_search.hill_climbing import (
     simple_hill_climbing,
     steepest_ascent_hill_climbing,
     stochastic_hill_climbing,
     random_restart_hill_climbing,
 )
-from algorithms.local_beam import local_beam_search
-from algorithms.simulated_annealing import simulated_annealing
-from algorithms.and_or_graph_search import and_or_graph_search
+from algorithms.local_search.local_beam import local_beam_search
+from algorithms.local_search.simulated_annealing import simulated_annealing
+from algorithms.searching_in_complex_environment.and_or_graph_search import and_or_graph_search
 
 
 def search(method, version=1):
@@ -56,27 +56,27 @@ def search(method, version=1):
         return simulated_annealing()
 
     if method == "Map Coloring - Backtracking":
-        from algorithms.backtracking import backtracking_search
+        from algorithms.csp.backtracking import backtracking_search
         return backtracking_search()
 
     if method == "Map Coloring - Forward Checking":
-        from algorithms.forward_checking import forward_checking_search
+        from algorithms.csp.forward_checking import forward_checking_search
         return forward_checking_search()
 
     if method == "Map Coloring - AC-3":
-        from algorithms.ac3 import ac3_search
+        from algorithms.csp.ac3 import ac3_search
         return ac3_search()
 
     if method == "Map Coloring - Min-Conflicts":
-        from algorithms.min_conflicts import min_conflicts_search
+        from algorithms.csp.min_conflicts import min_conflicts_search
         return min_conflicts_search()
 
     if method == "No Observation":
-        from algorithms.belief_state_search import sensorless_greedy
+        from algorithms.searching_in_complex_environment.belief_state_search import sensorless_greedy
         return sensorless_greedy()
 
     if method == "Partial Observation":
-        from algorithms.belief_state_search import partial_obs_greedy
+        from algorithms.searching_in_complex_environment.belief_state_search import partial_obs_greedy
         return partial_obs_greedy()
 
     # Mac dinh: BFS hoac DFS

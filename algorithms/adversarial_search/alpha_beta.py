@@ -1,11 +1,12 @@
-# Thuat toan Expectimax cho co Caro 3x3
+# Thuat toan Alpha-Beta Pruning cho co Caro 3x3
 
-from algorithms.minimax import check_winner
+from algorithms.adversarial_search.minimax import check_winner
 
-def expectimax_decision(board, ai_player):
+def alpha_beta_decision(board, ai_player):
 
     opponent = 'O' if ai_player == 'X' else 'X'
     nodes_evaluated = [0]
+    pruned_count = [0]
     
     def evaluate(board):
         winner = check_winner(board)
@@ -17,7 +18,7 @@ def expectimax_decision(board, ai_player):
             return 0
         return None
 
-    def expectimax(board, is_maximizing):
+    def alphabeta(board, depth, alpha, beta, is_maximizing):
         nodes_evaluated[0] += 1
         score = evaluate(board)
         if score is not None:
@@ -29,41 +30,52 @@ def expectimax_decision(board, ai_player):
                 for c in range(3):
                     if board[r][c] == ' ':
                         board[r][c] = ai_player
-                        val = expectimax(board, False)
+                        val = alphabeta(board, depth + 1, alpha, beta, False)
                         board[r][c] = ' '
                         best_val = max(best_val, val)
+                        alpha = max(alpha, best_val)
+                        if beta <= alpha:
+                            pruned_count[0] += 1
+                            break
+                if beta <= alpha:
+                    break
             return best_val
         else:
-            # Chance node: Tinh trung binh cong tat ca cac nuoc di cua doi thu
-            total_val = 0.0
-            count = 0
+            best_val = float('inf')
             for r in range(3):
                 for c in range(3):
                     if board[r][c] == ' ':
                         board[r][c] = opponent
-                        val = expectimax(board, True)
+                        val = alphabeta(board, depth + 1, alpha, beta, True)
                         board[r][c] = ' '
-                        total_val += val
-                        count += 1
-            if count == 0:
-                return 0.0
-            return total_val / count
+                        best_val = min(best_val, val)
+                        beta = min(beta, best_val)
+                        if beta <= alpha:
+                            pruned_count[0] += 1
+                            break
+                if beta <= alpha:
+                    break
+            return best_val
 
     best_score = -float('inf')
     best_move = None
     move_scores = []
+    alpha = -float('inf')
+    beta = float('inf')
     
     for r in range(3):
         for c in range(3):
             if board[r][c] == ' ':
                 board[r][c] = ai_player
-                score = expectimax(board, False)
+                score = alphabeta(board, 0, alpha, beta, False)
                 board[r][c] = ' '
-                move_scores.append(((r, c), round(score, 2)))
+                move_scores.append(((r, c), score))
                 if score > best_score:
                     best_score = score
                     best_move = (r, c)
+                # Cap nhat alpha cho nhanh goc
+                alpha = max(alpha, best_score)
                     
     # Sap xep nuoc di co diem cao len truoc
     move_scores.sort(key=lambda x: x[1], reverse=True)
-    return best_move, best_score, nodes_evaluated[0], move_scores
+    return best_move, best_score, nodes_evaluated[0], pruned_count[0], move_scores
