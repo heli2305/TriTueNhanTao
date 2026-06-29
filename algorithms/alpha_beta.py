@@ -3,16 +3,7 @@
 from algorithms.minimax import check_winner
 
 def alpha_beta_decision(board, ai_player):
-    """
-    Tim nuoc di tot nhat cho AI su dung thuat toan Alpha-Beta Pruning.
-    ai_player: 'X' hoac 'O'
-    Tra ve: (best_move, best_score, nodes_evaluated, pruned_count, move_scores)
-    - best_move: tuple (row, col)
-    - best_score: diem so tot nhat (int)
-    - nodes_evaluated: so luong trang thai da duyet
-    - pruned_count: so luong nhanh bi cat tia
-    - move_scores: danh sach cac nuoc di kha thi kem diem so tuong ung
-    """
+
     opponent = 'O' if ai_player == 'X' else 'X'
     nodes_evaluated = [0]
     pruned_count = [0]

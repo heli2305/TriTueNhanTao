@@ -1,11 +1,7 @@
 # Thuat toan Minimax cho co Caro 3x3
 
 def check_winner(board):
-    """
-    Kiem tra trang thai thang/thua cua ban co Caro 3x3.
-    board: list 2 chieu kich thuoc 3x3 chua 'X', 'O', hoac ' ' (o trong).
-    Tra ve: 'X' neu X thang, 'O' neu O thang, 'Tie' neu hoa, None neu chua ket thuc.
-    """
+
     win_states = [
         # Hang ngang
         [(0, 0), (0, 1), (0, 2)],
@@ -34,15 +30,7 @@ def check_winner(board):
     return 'Tie'
 
 def minimax_decision(board, ai_player):
-    """
-    Tim nuoc di tot nhat cho AI su dung thuat toan Minimax.
-    ai_player: 'X' hoac 'O'
-    Tra ve: (best_move, best_score, nodes_evaluated, move_scores)
-    - best_move: tuple (row, col)
-    - best_score: diem so tot nhat (int)
-    - nodes_evaluated: so luong trang thai da duyet
-    - move_scores: danh sach cac nuoc di kha thi kem diem so tuong ung
-    """
+    
     opponent = 'O' if ai_player == 'X' else 'X'
     nodes_evaluated = [0]
     

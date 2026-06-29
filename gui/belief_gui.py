@@ -27,7 +27,7 @@ class BeliefFrame(tk.Frame):
         left.grid_rowconfigure(2, weight=0, minsize=180)
 
         canvas_box = tk.LabelFrame(
-            left, text="Belief State - May Hut Bui 3x3",
+            left, text="Belief State - Máy Hút Bụi 3x3",
             font=("Arial", 12, "bold"), bg="white", padx=8, pady=8
         )
         canvas_box.grid(row=0, column=0, sticky="nsew", pady=(0, 4))
@@ -41,17 +41,17 @@ class BeliefFrame(tk.Frame):
         ctrl = tk.Frame(left, bg="#f2f4f7")
         ctrl.grid(row=1, column=0, sticky="ew", pady=4)
 
-        self.btn_play  = ttk.Button(ctrl, text="Tu dong chay (Play)", command=self.play)
-        self.btn_pause = ttk.Button(ctrl, text="Tam dung", command=self.pause, state="disabled")
-        self.btn_prev  = ttk.Button(ctrl, text="Buoc truoc", command=self.prev_step)
-        self.btn_next  = ttk.Button(ctrl, text="Buoc tiep", command=self.next_step)
+        self.btn_play  = ttk.Button(ctrl, text="Tự động chạy (Play)", command=self.play)
+        self.btn_pause = ttk.Button(ctrl, text="Tạm dừng", command=self.pause, state="disabled")
+        self.btn_prev  = ttk.Button(ctrl, text="Bước trước", command=self.prev_step)
+        self.btn_next  = ttk.Button(ctrl, text="Bước tiếp", command=self.next_step)
         self.btn_reset = ttk.Button(ctrl, text="Reset", command=self.reset_ui)
 
         for btn in [self.btn_play, self.btn_pause, self.btn_prev, self.btn_next, self.btn_reset]:
             btn.pack(side="left", padx=4)
 
         result_box = tk.LabelFrame(
-            left, text="Ket qua tinh toan",
+            left, text="Kết quả tính toán",
             font=("Arial", 12, "bold"), bg="white", height=180, padx=8, pady=8
         )
         result_box.grid(row=2, column=0, sticky="nsew", pady=(4, 0))
@@ -66,7 +66,7 @@ class BeliefFrame(tk.Frame):
         self.result_text.grid(row=0, column=0, sticky="nsew")
 
         process_box = tk.LabelFrame(
-            self, text="Qua trinh tung buoc chay thuat toan",
+            self, text="Quá trình từng bước chạy thuật toán",
             font=("Arial", 12, "bold"), bg="white", width=520, padx=8, pady=8
         )
         process_box.grid(row=0, column=1, sticky="nsew", padx=(8, 0))
@@ -120,8 +120,8 @@ class BeliefFrame(tk.Frame):
         y0 = 65
 
         step_label = (
-            f"{self.method_title} - Buoc {self.current_step + 1}/{len(self.records)} "
-            f"| Action: {action} | Belief = {n} trang thai"
+            f"{self.method_title} - Bước {self.current_step + 1}/{len(self.records)} "
+            f"| Action: {action} | Belief = {n} trạng thái"
         )
         self.canvas.create_text(w / 2, 30, text=step_label, font=("Arial", 12, "bold"), fill="#1e293b")
 
@@ -133,15 +133,15 @@ class BeliefFrame(tk.Frame):
                 dp = dirty_prob[(r, c)]
 
                 if rp > 0 and dp > 0:
-                    fill = "#fecaca"   # robot + ban -> do nhat
+                    fill = "#fecaca"   # robot + bẩn -> đỏ nhạt
                 elif rp > 0:
-                    fill = "#bfdbfe"   # co robot, sach -> xanh duong
+                    fill = "#bfdbfe"   # có robot, sạch -> xanh dương
                 elif dp > 0.6:
-                    fill = "#fef3c7"   # nhieu kha nang ban -> vang
+                    fill = "#fef3c7"   # nhiều khả năng bẩn -> vàng
                 elif dp > 0:
-                    fill = "#fef9c3"   # it kha nang ban -> vang nhat
+                    fill = "#fef9c3"   # ít khả năng bẩn -> vàng nhạt
                 else:
-                    fill = "#d1fae5"   # chac chan sach -> xanh la
+                    fill = "#d1fae5"   # chắc chắn sạch -> xanh lá
 
                 self.canvas.create_rectangle(
                     x, y, x + cell, y + cell,
@@ -154,14 +154,14 @@ class BeliefFrame(tk.Frame):
                 )
                 self.canvas.create_text(
                     x + cell / 2, y + cell / 2 + 12,
-                    text=f"Ban: {dp * 100:.0f}%",
+                    text=f"Bẩn: {dp * 100:.0f}%",
                     font=("Arial", 10), fill="#92400e"
                 )
 
         legend_y = y0 + grid_h + 20
         self.canvas.create_text(
             w / 2, legend_y,
-            text="Xanh duong=Robot | Vang=Co the ban | Xanh la=Chắc sach | Do=Robot+Ban",
+            text="Xanh dương=Robot | Vàng=Có thể bẩn | Xanh lá=Chắc sạch | Đỏ=Robot+Bẩn",
             font=("Arial", 9), fill="#6b7280"
         )
 
@@ -186,7 +186,7 @@ class BeliefFrame(tk.Frame):
         self.btn_pause.config(state="disabled")
         self.update_display()
         self.update_logs()
-        self.set_result(f"San sang chay mo phong: {self.method_title}\nNhan Play hoac Buoc tiep de bat dau.")
+        self.set_result(f"Sẵn sàng chạy mô phỏng: {self.method_title}\nNhấn Play hoặc Bước tiếp để bắt đầu.")
 
     def set_result(self, text):
         self.result_text.config(state="normal")
@@ -243,7 +243,7 @@ class BeliefFrame(tk.Frame):
         self.current_step = 0
         self.update_display()
         self.update_logs()
-        self.set_result("Da reset ve trang thai ban dau.")
+        self.set_result("Đã reset về trạng thái ban đầu.")
 
     def on_canvas_configure(self, event):
         self.update_display()

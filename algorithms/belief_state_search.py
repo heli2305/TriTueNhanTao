@@ -1,6 +1,6 @@
-# No Observation & Partially Observable - May Hut Bui 3x3
-# No Observation:     biet grid, khong biet vi tri -> 9 trang thai ban dau
-# Partial Observable: biet vi tri, quan sat o dang dung -> ~256 trang thai ban dau
+# No Observation & Partially Observable - Máy Hút Bụi 3x3
+# No Observation:     biết grid, không biết vị trí -> 9 trạng thái ban đầu
+# Partial Observable: biết vị trí, quan sát ô đang đứng -> ~256 trạng thái ban đầu
 
 SIZE = 3
 ACTIONS = ["U", "D", "L", "R"]
@@ -16,7 +16,7 @@ BELIEF_POS = (0, 0)
 def apply_action(pos, grid, action):
     r, c = pos
     g = [list(row) for row in grid]
-    g[r][c] = 0  # hut o hien tai truoc khi di chuyen
+    g[r][c] = 0  # hút ô hiện tại trước khi di chuyển
     dr, dc = {"U": (-1, 0), "D": (1, 0), "L": (0, -1), "R": (0, 1)}[action]
     nr = max(0, min(SIZE - 1, r + dr))
     nc = max(0, min(SIZE - 1, c + dc))
@@ -24,7 +24,7 @@ def apply_action(pos, grid, action):
 
 
 def predict(belief, action):
-    """Ap dung action len toan bo belief state -> belief moi."""
+    """Áp dụng action lên toàn bộ belief state -> belief mới."""
     next_belief = set()
     for pos, grid in belief:
         new_pos, new_grid = apply_action(pos, grid, action)
@@ -33,13 +33,13 @@ def predict(belief, action):
 
 
 def observe(pos, grid):
-    """Cam bien cuc bo: robot chi biet o dang dung sach hay ban."""
+    """Cảm biến cục bộ: robot chỉ biết ô đang đứng sạch hay bẩn."""
     r, c = pos
     return grid[r][c]
 
 
 def update_belief(belief, obs):
-    """Loc belief: chi giu cac trang thai phu hop voi quan sat."""
+    """Lọc belief: chỉ giữ các trạng thái phù hợp với quan sát."""
     return frozenset(
         (pos, grid) for pos, grid in belief
         if observe(pos, grid) == obs
@@ -47,7 +47,7 @@ def update_belief(belief, obs):
 
 
 def is_goal(belief):
-    """Dich dat duoc khi moi trang thai trong belief deu sach."""
+    """Đích đạt được khi mọi trạng thái trong belief đều sạch."""
     for _, grid in belief:
         for r in range(SIZE):
             for c in range(SIZE):
@@ -57,7 +57,7 @@ def is_goal(belief):
 
 
 def heuristic(belief):
-    """Trung binh so o ban tren tat ca trang thai trong belief."""
+    """Trung bình số ô bẩn trên tất cả trạng thái trong belief."""
     if not belief:
         return 0
     total = sum(grid[r][c] for _, grid in belief for r in range(SIZE) for c in range(SIZE))
@@ -65,7 +65,7 @@ def heuristic(belief):
 
 
 def all_possible_grids():
-    """Tao tat ca 2^9 = 512 grid 3x3 co the."""
+    """Tạo tất cả 2^9 = 512 grid 3x3 có thể."""
     grids = []
     for mask in range(2 ** (SIZE * SIZE)):
         grid = tuple(
@@ -86,7 +86,7 @@ def sensorless_greedy():
         "belief": initial,
         "action": "-",
         "plan": [],
-        "log": f"Buoc 1: Khong biet vi tri. Belief = {len(initial)} trang thai\n\n"
+        "log": f"Bước 1: Không biết vị trí. Belief = {len(initial)} trạng thái\n\n"
     })
 
     step = 2
@@ -102,7 +102,7 @@ def sensorless_greedy():
                 "belief": belief,
                 "action": "GOAL",
                 "plan": plan,
-                "log": f"=> DAT DICH!\nChuoi hanh dong: {' -> '.join(plan)}\n"
+                "log": f"=> ĐẠT ĐÍCH!\nChuỗi hành động: {' -> '.join(plan)}\n"
             })
             return plan, records, "success"
 
@@ -116,7 +116,7 @@ def sensorless_greedy():
                     "belief": nb,
                     "action": action,
                     "plan": plan + [action],
-                    "log": f"Buoc {step}: '{action}' -> Belief: {len(nb)} trang thai, h={h}\n\n"
+                    "log": f"Bước {step}: '{action}' -> Belief: {len(nb)} trạng thái, h={h}\n\n"
                 })
                 step += 1
 
@@ -132,12 +132,12 @@ def partial_obs_greedy():
     visited = {initial}
     records = []
 
-    obs_str = "Ban" if obs0 else "Sach"
+    obs_str = "Bẩn" if obs0 else "Sạch"
     records.append({
         "belief": initial,
         "action": "-",
         "plan": [],
-        "log": f"Buoc 1: Vi tri {BELIEF_POS}, obs={obs_str}. Belief = {len(initial)} trang thai\n\n"
+        "log": f"Bước 1: Vị trí {BELIEF_POS}, obs={obs_str}. Belief = {len(initial)} trạng thái\n\n"
     })
 
     step = 2
@@ -153,7 +153,7 @@ def partial_obs_greedy():
                 "belief": belief,
                 "action": "GOAL",
                 "plan": plan,
-                "log": f"=> DAT DICH!\nChuoi hanh dong: {' -> '.join(plan)}\n"
+                "log": f"=> ĐẠT ĐÍCH!\nChuỗi hành động: {' -> '.join(plan)}\n"
             })
             return plan, records, "success"
 
@@ -166,12 +166,12 @@ def partial_obs_greedy():
                     visited.add(nb)
                     frontier.append((nb, plan + [action]))
                     h = round(heuristic(nb), 1)
-                    obs_str = "Ban" if obs else "Sach"
+                    obs_str = "Bẩn" if obs else "Sạch"
                     records.append({
                         "belief": nb,
                         "action": action,
                         "plan": plan + [action],
-                        "log": f"Buoc {step}: '{action}', obs={obs_str} -> Belief: {len(nb)} trang thai, h={h}\n\n"
+                        "log": f"Bước {step}: '{action}', obs={obs_str} -> Belief: {len(nb)} trạng thái, h={h}\n\n"
                     })
                     step += 1
 

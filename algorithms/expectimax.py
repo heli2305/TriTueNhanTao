@@ -3,16 +3,7 @@
 from algorithms.minimax import check_winner
 
 def expectimax_decision(board, ai_player):
-    """
-    Tim nuoc di tot nhat cho AI su dung thuat toan Expectimax.
-    Gia dinh doi thu choi ngau nhien hoan toan (Chance Node).
-    ai_player: 'X' hoac 'O'
-    Tra ve: (best_move, best_score, nodes_evaluated, move_scores)
-    - best_move: tuple (row, col)
-    - best_score: diem so ky vong tot nhat (float)
-    - nodes_evaluated: so luong trang thai da duyet
-    - move_scores: danh sach cac nuoc di kha thi kem diem so tuong ung (diem thap phan)
-    """
+
     opponent = 'O' if ai_player == 'X' else 'X'
     nodes_evaluated = [0]
     
