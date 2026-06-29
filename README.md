@@ -9,7 +9,6 @@ Dự án mô phỏng robot hút bụi tự động tìm đường trên lưới 
 * `algorithms/`: Thư mục chứa các thuật toán tìm kiếm 
 * `gui/`: Thư mục chứa giao diện Tkinter.
 * `gif/`: Thư mục chứa các file GIF minh họa thuật toán.
-* `BTVN/`: Nơi lưu trữ các file notebook bài tập về nhà `.ipynb` cũ.
 
 ## Cách chạy ứng dụng
 Chạy lệnh sau tại thư mục gốc:
